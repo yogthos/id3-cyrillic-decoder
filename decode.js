@@ -23,7 +23,11 @@ async function decodeMP3Tags(filePath) {
         // Decode all fields
         const decodedTags = {};
         for (const [field, value] of Object.entries(mergedTags)) {
-            if (value) decodedTags[field] = decodeCyrillic(value);
+            try {
+                if (value) decodedTags[field] = decodeCyrillic(value);
+            } catch (error) {
+                console.log('failed to parse field:', field, value);
+            }
         }
 
         // Write back as ID3v2.4 tags with UTF-8 encoding
@@ -98,7 +102,7 @@ function decodeCyrillic(text) {
             }).length;
 
             if (count > best.count) best = { decoded, count };
-        } catch (e) {}
+        } catch (e) { }
     }
     return best.decoded;
 }
